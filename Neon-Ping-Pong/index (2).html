@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Neon Ping Pong X — Space Edition</title>
+<style>
+#posterScreen{
+    position:absolute;
+    inset:0;
+    z-index:50;
+    background:#02030d;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+#posterScreen img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+#posterScreen button{
+    position:absolute;
+    bottom:25px;
+    left:50%;
+    transform:translateX(-50%);
+    padding:14px 30px;
+    border:2px solid #22d3ee;
+    border-radius:15px;
+    background:#080b20ee;
+    color:white;
+    font-size:20px;
+    font-weight:bold;
+    box-shadow:0 0 25px #22d3ee;
+}
+*{box-sizing:border-box}body{margin:0;background:#02030d;color:#fff;font-family:Arial,sans-serif;display:flex;justify-content:center;min-height:100vh;padding:14px}
+.wrap{width:min(760px,100%)}h1{text-align:center;margin:4px 0 10px;text-shadow:0 0 18px #8b5cf6}
+.stats{display:flex;justify-content:center;gap:7px;flex-wrap:wrap}.stat{background:#090d25dd;border:1px solid #6045a8;border-radius:12px;padding:7px 10px;font-weight:bold}
+.arena{position:relative;height:min(70vh,560px);min-height:420px;overflow:hidden;border:2px solid #6846c7;border-radius:22px;background:radial-gradient(circle at 25% 25%,#632cff55,transparent 22%),radial-gradient(circle at 78% 70%,#00d9ff44,transparent 25%),radial-gradient(circle at 50% 45%,#25105f,#09051d 45%,#02030d);box-shadow:0 0 35px #5b21b688,inset 0 0 100px #000;touch-action:none}
+.arena:before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle,#fff 1px,transparent 2px),radial-gradient(circle,#8be9ff 1px,transparent 2px),radial-gradient(circle,#d8b4fe 1px,transparent 2px);background-size:73px 73px,127px 127px,191px 191px;animation:stars 18s linear infinite;opacity:.65}
+.planet{position:absolute;right:20px;top:60px;font-size:82px;opacity:.4;filter:drop-shadow(0 0 20px #8b5cf6);animation:float 5s ease-in-out infinite}.nebula{position:absolute;width:240px;height:240px;border-radius:50%;left:-90px;bottom:20px;background:#b026ff33;filter:blur(45px)}
+.net{position:absolute;left:0;right:0;top:50%;border-top:2px dashed #ffffff35}.paddle{position:absolute;width:108px;height:16px;border-radius:12px;z-index:5}.ai{top:22px;background:linear-gradient(90deg,#ff2bd6,#fff,#ff2bd6);box-shadow:0 0 18px #ff2bd6}.player{bottom:22px;background:linear-gradient(90deg,#16d9ff,#fff,#16d9ff);box-shadow:0 0 18px #16d9ff}
+.ball{position:absolute;width:30px;height:30px;border-radius:50%;z-index:8;background:radial-gradient(circle at 28% 22%,#fff 0 8%,#dffcff 18%,#42e4ff 42%,#237cff 68%,#07163d);box-shadow:0 0 10px #fff,0 0 28px #35dfff,0 0 60px #168bff;animation:spin .3s linear infinite}
+.target{position:absolute;width:40px;height:40px;border:3px solid #ffd21f;border-radius:50%;z-index:6;display:grid;place-items:center;box-shadow:0 0 18px #ffd21f}
+.bar{height:9px;background:#15182b;border-radius:9px;overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#a855f7,#22d3ee)}
+.controls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:9px}.controls button{border:1px solid #6555a9;background:#0c1025;color:#fff;border-radius:12px;padding:11px 15px;font-weight:bold}
+.status{text-align:center;color:#c8c8e8;margin:9px;font-size:14px}
+@keyframes stars{to{background-position:0 500px,0 800px,0 1000px}}@keyframes float{50%{transform:translateY(18px) rotate(5deg)}}@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body><div class="wrap">
+<h1>🌌 NEON PING PONG X</h1>
+<div class="stats"><div class="stat">YOU <span id="s">0</span></div><div class="stat">AI <span id="a">0</span></div><div class="stat">❤️ <span id="l">3</span></div><div class="stat">🔥 <span id="c">0</span>x</div><div class="stat">LV <span id="v">1</span></div></div>
+<div class="arena" id="arena"><div
+<div id="posterScreen">
+    <img src="neon-ping-pong-poster.png" alt="Neon Ping Pong X">
+    <button onclick="startGameFromPoster()">▶ PLAY NOW</button>
+</div>
+class="planet">🪐</div><div class="nebula"></div><div class="net"></div><div class="target" id="target">🎯</div><div class="ball" id="ball"></div><div class="paddle ai" id="ai"></div><div class="paddle player" id="player"></div></div>
+<div class="bar"><i id="ult"></i></div>
+<div class="controls"><button id="left">◀ LEFT</button><button id="right">RIGHT ▶</button><button id="ultimate">⚡ ULTIMATE</button><button id="start">🚀 START</button></div>
+<div class="status" id="status">Hit the target and charge your ultimate!</div>
+</div>
+<script>
+const $=id=>document.getElementById(id),ar=$("arena"),b=$("ball"),p=$("player"),ai=$("ai"),tg=$("target");
+let px=0,ax=0,bx=0,by=0,vx=250,vy=270,score=0,as=0,lives=3,combo=0,level=1,charge=0,run=false,last=0,raf;
+const PW=108,cl=(x,a,z)=>Math.max(a,Math.min(z,x));
+function setP(x){px=cl(x,0,ar.clientWidth-PW);p.style.left=px+"px"}
+function resetBall(){bx=ar.clientWidth/2-15;by=ar.clientHeight/2;vx=(Math.random()<.5?-1:1)*(230+level*14);vy=(Math.random()<.5?-1:1)*(250+level*14)}
+function moveTarget(){tg.style.left=Math.random()*(ar.clientWidth-45)+"px";tg.style.top=(90+Math.random()*(ar.clientHeight-180))+"px"}
+function add(n){score+=n;$("s").textContent=score;charge=cl(charge+n*2,0,100);$("ult").style.width=charge+"%";level=1+Math.floor(score/10);$("v").textContent=level}
+function reset(){score=as=combo=0;lives=3;level=1;charge=0;$("s").textContent=$("a").textContent=0;$("l").textContent=3;$("c").textContent=0;$("v").textContent=1;$("ult").style.width="0%";setP((ar.clientWidth-PW)/2);ax=px;moveTarget();resetBall()}
+function start(){cancelAnimationFrame(raf);reset();run=true;$("status").textContent="🌌 SPACE MATCH STARTED!";last=performance.now();raf=requestAnimationFrame(loop)}
+function ultimate(){if(charge<100||!run)return;charge=0;$("ult").style.width="0%";add(10);combo+=3;$("c").textContent=combo;$("status").textContent="⚡ COSMIC ULTIMATE! +10";resetBall()}
+function loop(t){if(!run)return;let dt=Math.min(.03,(t-last)/1000);last=t;bx+=vx*dt;by+=vy*dt;
+if(bx<0){bx=0;vx=Math.abs(vx)}if(bx>ar.clientWidth-30){bx=ar.clientWidth-30;vx=-Math.abs(vx)}
+ax+=(bx-PW/2+15-ax)*Math.min(1,dt*(2+level*.12));ai.style.left=cl(ax,0,ar.clientWidth-PW)+"px";
+let py=ar.clientHeight-38;
+if(vy>0&&by+30>=py&&by<py+30&&bx+30>px&&bx<px+PW){by=py-30;let h=(bx+15-(px+PW/2))/(PW/2);vy=-Math.abs(vy)*1.025;vx=cl(vx+h*180,-600,600);combo++;$("c").textContent=combo;add(1)}
+if(vy<0&&by<48&&bx+30>ax&&bx<ax+PW){by=48;vy=Math.abs(vy)*1.02;as++;$("a").textContent=as}
+let tx=parseFloat(tg.style.left),ty=parseFloat(tg.style.top);if(Math.hypot(bx+15-(tx+20),by+15-(ty+20))<35){add(5);combo++;$("c").textContent=combo;$("status").textContent="🎯 TARGET HIT! +5";moveTarget()}
+if(by>ar.clientHeight+5){lives--;$("l").textContent=lives;combo=0;$("c").textContent=0;if(lives<=0){run=false;$("status").textContent="🏁 GAME OVER — SCORE "+score;return}resetBall()}
+if(by<-35){add(3);combo++;$("c").textContent=combo;$("status").textContent="🔥 POINT!";resetBall()}
+b.style.left=bx+"px";b.style.top=by+"px";raf=requestAnimationFrame(loop)}
+$("left").onclick=()=>setP(px-70);$("right").onclick=()=>setP(px+70);$("start").onclick=start;$("ultimate").onclick=ultimate;
+ar.addEventListener("pointermove",e=>{let r=ar.getBoundingClientRect();setP(e.clientX-r.left-PW/2)});
+document.addEventListener("keydown",e=>{if(e.key==="ArrowLeft")setP(px-55);if(e.key==="ArrowRight")setP(px+55);if(e.code==="Space")ultimate()});
+reset();
+function startGameFromPoster(){
+    document.getElementById("posterScreen").style.display = "none";
+    start();
+}
+</script></body></html>
