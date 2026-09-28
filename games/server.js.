@@ -1,0 +1,330 @@
+const http = require("http");
+const WebSocket = require("ws");
+
+const PORT = Number(process.env.PORT || 8080);
+const rooms = new Map();
+
+function newRoomCode() {
+  let code;
+  do {
+    code = String(Math.floor(100000 + Math.random() * 900000));
+  } while (rooms.has(code));
+  return code;
+}
+
+function send(ws, data) {
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify(data));
+  }
+}
+
+function broadcast(room, data, except = null) {
+  for (const player of [room.white, room.black]) {
+    if (player && player !== except) {
+      send(player, data);
+    }
+  }
+}
+
+function closeRoom(code, message = "Room closed") {
+  const room = rooms.get(code);
+  if (!room) return;
+
+  broadcast(room, {
+    type: "room-closed",
+    room: code,
+    message
+  });
+
+  if (room.white) {
+    room.white.roomCode = null;
+    room.white.color = null;
+  }
+
+  if (room.black) {
+    room.black.roomCode = null;
+    room.black.color = null;
+  }
+
+  rooms.delete(code);
+}
+
+const httpServer = http.createServer((req, res) => {
+  res.writeHead(200, {
+    "Content-Type": "text/plain; charset=utf-8"
+  });
+  res.end("Shadow Chess X 2.0 multiplayer server is running.");
+});
+
+const wss = new WebSocket.Server({ server: httpServer });
+
+wss.on("connection", (ws) => {
+  ws.roomCode = null;
+  ws.color = null;
+
+  send(ws, {
+    type: "hello",
+    game: "Shadow Chess X 2.0",
+    protocol: 2
+  });
+
+  ws.on("message", (raw) => {
+    let msg;
+
+    try {
+      msg = JSON.parse(raw.toString());
+    } catch {
+      send(ws, {
+        type: "error",
+        message: "Invalid message."
+      });
+      return;
+    }
+
+    // ------------------------------------------------------------
+    // CREATE ROOM
+    // ------------------------------------------------------------
+    if (msg.type === "create") {
+      if (ws.roomCode) {
+        send(ws, {
+          type: "error",
+          message: "You are already in a room."
+        });
+        return;
+      }
+
+      const code = newRoomCode();
+
+      rooms.set(code, {
+        white: ws,
+        black: null,
+
+        // Last authoritative board state received from a client.
+        // This lets the second player immediately receive the
+        // current position when joining.
+        state: null,
+
+        // Monotonically increasing server sequence number.
+        seq: 0
+      });
+
+      ws.roomCode = code;
+      ws.color = "w";
+
+      send(ws, {
+        type: "room-created",
+        room: code,
+        color: "w",
+        started: false
+      });
+
+      return;
+    }
+
+    // ------------------------------------------------------------
+    // JOIN ROOM
+    // ------------------------------------------------------------
+    if (msg.type === "join") {
+      const code = String(msg.room || "").trim();
+
+      if (!/^\d{6}$/.test(code)) {
+        send(ws, {
+          type: "error",
+          message: "Room code must be 6 digits."
+        });
+        return;
+      }
+
+      if (ws.roomCode) {
+        send(ws, {
+          type: "error",
+          message: "You are already in a room."
+        });
+        return;
+      }
+
+      const room = rooms.get(code);
+
+      if (!room) {
+        send(ws, {
+          type: "error",
+          message: "Room not found."
+        });
+        return;
+      }
+
+      if (room.black) {
+        send(ws, {
+          type: "error",
+          message: "Room is full."
+        });
+        return;
+      }
+
+      room.black = ws;
+      ws.roomCode = code;
+      ws.color = "b";
+
+      send(ws, {
+        type: "room-joined",
+        room: code,
+        color: "b",
+        started: true
+      });
+
+      // Tell White that Black has joined.
+      send(room.white, {
+        type: "player-joined",
+        room: code,
+        color: "w",
+        started: true
+      });
+
+      // IMPORTANT:
+      // If White already sent a board state before Black joined,
+      // immediately synchronize that state to Black.
+      if (room.state !== null) {
+        send(ws, {
+          type: "state",
+          room: code,
+          color: "w",
+          seq: room.seq,
+          state: room.state
+        });
+      }
+
+      return;
+    }
+
+    // ------------------------------------------------------------
+    // ALL OTHER MESSAGES REQUIRE A ROOM
+    // ------------------------------------------------------------
+    const code = ws.roomCode;
+    const room = code ? rooms.get(code) : null;
+
+    if (!room) {
+      send(ws, {
+        type: "error",
+        message: "You are not in a room."
+      });
+      return;
+    }
+
+    // ------------------------------------------------------------
+    // GAME STATE / MOVE SYNCHRONIZATION
+    // ------------------------------------------------------------
+    if (msg.type === "state") {
+      if (msg.room !== code || msg.color !== ws.color) {
+        send(ws, {
+          type: "error",
+          message: "State rejected."
+        });
+        return;
+      }
+
+      if (!room.white || !room.black) {
+        send(ws, {
+          type: "error",
+          message: "Waiting for opponent."
+        });
+        return;
+      }
+
+      if (msg.state === undefined || msg.state === null) {
+        send(ws, {
+          type: "error",
+          message: "Empty game state rejected."
+        });
+        return;
+      }
+
+      // Store the latest complete position.
+      room.state = msg.state;
+      room.seq += 1;
+
+      const packet = {
+        type: "state",
+        room: code,
+        color: ws.color,
+        seq: room.seq,
+        state: room.state
+      };
+
+      // Send the new position ONLY to the other player.
+      // The sender already has the local position.
+      broadcast(room, packet, ws);
+
+      return;
+    }
+
+    // ------------------------------------------------------------
+    // REMATCH
+    // ------------------------------------------------------------
+    if (msg.type === "rematch") {
+      broadcast(room, {
+        type: "rematch",
+        room: code
+      }, ws);
+
+      return;
+    }
+
+    // ------------------------------------------------------------
+    // LEAVE
+    // ------------------------------------------------------------
+    if (msg.type === "leave") {
+      if (msg.room === code) {
+        const other =
+          ws.color === "w" ? room.black : room.white;
+
+        if (other) {
+          send(other, {
+            type: "player-left",
+            room: code
+          });
+        }
+
+        closeRoom(code, "A player left the room.");
+      }
+
+      try {
+        ws.close();
+      } catch {}
+
+      return;
+    }
+
+    send(ws, {
+      type: "error",
+      message: "Unknown message type."
+    });
+  });
+
+  ws.on("close", () => {
+    const code = ws.roomCode;
+    const room = code ? rooms.get(code) : null;
+
+    if (!room) return;
+
+    const other =
+      ws.color === "w" ? room.black : room.white;
+
+    if (other) {
+      send(other, {
+        type: "player-left",
+        room: code
+      });
+
+      other.roomCode = null;
+      other.color = null;
+    }
+
+    rooms.delete(code);
+  });
+});
+
+httpServer.listen(PORT, () => {
+  console.log(
+    `Shadow Chess X 2.0 server listening on port ${PORT}`
+  );
+});
