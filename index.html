@@ -305,6 +305,27 @@ footer {
     border-top: 1px solid #1a1a25;
 }
 
+
+/* Shadow Chess Button */
+.game-button {
+    display: inline-block;
+    margin-top: 25px;
+    padding: 12px 22px;
+    background: #00d9ff;
+    color: #050509;
+    text-decoration: none;
+    font-weight: 700;
+    border-radius: 5px;
+    transition: 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.game-button:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 25px #00d9ff66;
+}
+
 /* Mobile */
 @media (max-width: 600px) {
     nav {
@@ -381,7 +402,7 @@ footer {
 <div class="game-card">
 
     <div class="game-image">
-        <img src="Neon-Ping-Pong/neon-ping-pong-play-now.jpg"
+        <img src="neon-ping-pong-play-now.jpg"
      alt="Neon Ping Pong X Power Edition">
     </div>
 
@@ -399,6 +420,31 @@ footer {
     </div>
 
 </div>
+
+
+    <!-- SHADOW CHESS X 2.0 -->
+    <div class="game-card">
+
+        <div class="game-image">
+            <img src="games/shadow-chess-poster.png"
+                 alt="Shadow Chess X 2.0 Game Poster">
+        </div>
+
+        <div class="game-info">
+            <h3>SHADOW CHESS X 2.0</h3>
+
+            <p>
+                Play online multiplayer chess, create rooms,
+                join friends, and battle your opponent.
+            </p>
+
+            <a href="games/Shadow-chess-x-2.0-online-fixed-1.html"
+               class="game-button">
+                PLAY SHADOW CHESS
+            </a>
+        </div>
+
+    </div>
 
     <div class="section-title">
         <h2>OUR GAMES</h2>
