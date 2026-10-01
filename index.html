@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="ShadowByte Studio — Independent game studio creating immersive worlds, games and digital experiences.">
+<title>ShadowByte Studio | Exhibition 2026</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+.qr-image {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+    display: block;
+    margin: 22px auto;
+    background: white;
+    padding: 10px;
+    border-radius: 12px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;scroll-behavior:smooth}
+:root{
+ --cyan:#00d9ff;
+ --blue:#1677ff;
+ --purple:#8b5cf6;
+ --bg:#050509;
+ --card:#0c111b;
+ --text:#fff;
+ --muted:#9ba7b7;
+ --line:#1b3147;
+}
+body{
+ font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);
+ overflow-x:hidden;
+}
+body::before{
+ content:"";position:fixed;inset:0;z-index:-2;
+ background:
+ radial-gradient(circle at 15% 10%,#10345d 0,transparent 30%),
+ radial-gradient(circle at 85% 25%,#24104b 0,transparent 28%),
+ radial-gradient(circle at 50% 100%,#062c40 0,transparent 30%);
+}
+body::after{
+ content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.18;
+ background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);
+ background-size:70px 70px;
+ mask-image:linear-gradient(to bottom,black,transparent 75%);
+}
+a{color:inherit}
+nav{
+ position:fixed;top:0;left:0;width:100%;z-index:1000;
+ display:flex;justify-content:space-between;align-items:center;
+ padding:17px 7%;background:rgba(5,5,9,.82);
+ border-bottom:1px solid rgba(0,217,255,.12);
+ backdrop-filter:blur(14px);
+}
+.logo{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;color:var(--cyan);letter-spacing:1px}
+.logo span{color:#fff}
+nav ul{display:flex;list-style:none;gap:24px}
+nav a{text-decoration:none;color:#c5ccd6;font-size:12px;font-weight:600;transition:.25s}
+nav a:hover{color:var(--cyan)}
+.hero{
+ min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;
+ padding:125px 20px 80px;position:relative;
+}
+.hero-content{max-width:920px}
+.badge,.launch-pill{
+ display:inline-flex;align-items:center;gap:8px;border:1px solid var(--cyan);
+ padding:8px 17px;border-radius:999px;color:var(--cyan);
+ font-size:10px;letter-spacing:2px;font-weight:700;
+ background:rgba(0,217,255,.05);box-shadow:0 0 25px rgba(0,217,255,.08);
+}
+.hero h1{
+ font-family:'Orbitron',sans-serif;font-size:clamp(42px,8vw,88px);
+ line-height:1.03;margin:25px 0 22px;
+}
+.hero h1 span{
+ color:var(--cyan);text-shadow:0 0 30px rgba(0,217,255,.45)
+}
+.hero p{color:#aeb7c5;max-width:680px;margin:auto;line-height:1.8}
+.hero-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:32px}
+.btn,.outline-btn{
+ display:inline-block;padding:14px 24px;border-radius:7px;text-decoration:none;font-weight:800;font-size:12px;
+ transition:.25s;border:1px solid var(--cyan);letter-spacing:.5px
+}
+.btn{background:var(--cyan);color:#041018}
+.outline-btn{background:transparent;color:var(--cyan)}
+.btn:hover,.outline-btn:hover{transform:translateY(-3px);box-shadow:0 0 28px rgba(0,217,255,.25)}
+.launch-banner{
+ max-width:1050px;margin:-35px auto 20px;padding:22px 25px;
+ border:1px solid #284a66;border-radius:16px;
+ background:linear-gradient(100deg,rgba(0,217,255,.10),rgba(139,92,246,.08));
+ display:flex;align-items:center;justify-content:space-between;gap:18px;
+}
+.launch-banner strong{font-family:'Orbitron',sans-serif;color:#fff}
+.launch-banner small{display:block;color:#8997a8;margin-top:4px}
+.launch-date{font-family:'Orbitron',sans-serif;color:var(--cyan);font-weight:800;white-space:nowrap}
+section{padding:88px 7%}
+.section-title{text-align:center;margin-bottom:42px}
+.section-title h2{font-family:'Orbitron',sans-serif;font-size:clamp(25px,5vw,40px)}
+.section-title p{color:#8290a2;margin-top:10px;font-size:14px}
+.games-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;max-width:1100px;margin:auto}
+.game-card{
+ background:linear-gradient(145deg,#101927,#090b12);border:1px solid var(--line);
+ border-radius:18px;overflow:hidden;transition:.3s;box-shadow:0 12px 35px rgba(0,0,0,.18)
+}
+.game-card:hover{border-color:var(--cyan);transform:translateY(-5px)}
+.game-image{height:245px;overflow:hidden;position:relative;background:#090c12}
+.game-image img{width:100%;height:100%;object-fit:cover;display:block}
+.game-image::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 45%,#090b12)}
+.game-info{padding:25px}
+.game-info h3{font-family:'Orbitron',sans-serif;font-size:19px;color:var(--cyan);margin-bottom:12px}
+.game-info p{color:#9aa6b5;line-height:1.7;font-size:13px}
+.status{
+ display:inline-block;margin-top:18px;padding:7px 12px;border-radius:5px;
+ background:#182b24;color:#50e6a0;font-size:11px;font-weight:700
+}
+.status.launch{background:rgba(0,217,255,.12);color:var(--cyan)}
+.game-button{
+ display:inline-block;margin-top:20px;padding:11px 18px;background:var(--cyan);color:#041018;
+ text-decoration:none;font-weight:800;border-radius:6px;font-size:11px;transition:.25s
+}
+.game-button:hover{transform:translateY(-3px);box-shadow:0 0 22px rgba(0,217,255,.25)}
+.full-card{grid-column:1/-1}
+.features,.team-grid,.stats-grid{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;max-width:1100px;margin:auto
+}
+.feature,.team-card,.stat{
+ background:rgba(12,17,27,.86);border:1px solid #1c2b3b;border-radius:14px;
+ padding:25px 18px;text-align:center;transition:.3s
+}
+.feature:hover,.team-card:hover{border-color:var(--cyan);transform:translateY(-4px)}
+.feature .icon{font-size:34px;margin-bottom:13px}
+.feature h3{font-size:16px;margin-bottom:8px}
+.feature p{font-size:12px;color:#8995a4;line-height:1.6}
+.team-avatar{
+ width:70px;height:70px;border-radius:50%;margin:0 auto 15px;
+ display:flex;align-items:center;justify-content:center;
+ background:linear-gradient(135deg,#00d9ff,#6b4cff);color:#041018;
+ font-family:'Orbitron',sans-serif;font-weight:900;font-size:21px;
+ box-shadow:0 0 22px rgba(0,217,255,.16)
+}
+.team-card h3{font-size:15px;margin-bottom:8px}
+.role{color:var(--cyan);font-size:11px;font-weight:800;letter-spacing:.4px}
+.handle{color:#788697;font-size:11px;margin-top:7px}
+.stats-grid{grid-template-columns:repeat(4,1fr)}
+.stat strong{display:block;font-family:'Orbitron',sans-serif;font-size:29px;color:var(--cyan)}
+.stat span{display:block;color:#8793a3;font-size:11px;margin-top:5px}
+.timeline{
+ max-width:900px;margin:auto;display:grid;grid-template-columns:repeat(5,1fr);gap:10px
+}
+.step{
+ position:relative;text-align:center;padding:22px 10px;border:1px solid #1c2b3b;border-radius:12px;
+ background:#0b1018
+}
+.step b{display:block;color:var(--cyan);font-family:'Orbitron',sans-serif;font-size:11px;margin-bottom:9px}
+.step span{color:#a7b1be;font-size:11px}
+.about{max-width:820px;margin:auto;text-align:center}
+.about p{color:#a2adba;line-height:2;font-size:14px}
+.qr-box{
+ max-width:850px;margin:auto;text-align:center;padding:35px;border-radius:18px;
+ border:1px solid #28445e;background:linear-gradient(135deg,rgba(0,217,255,.07),rgba(139,92,246,.06))
+}
+.qr-placeholder{
+ width:150px;height:150px;margin:22px auto;border:2px dashed #52697f;
+ display:flex;align-items:center;justify-content:center;color:#718095;font-size:11px
+}
+.qr-box p{color:#8795a6;font-size:12px;line-height:1.6}
+.contact{text-align:center;background:rgba(8,8,18,.7)}
+.contact p{color:#909bab;margin-top:12px}
+.contact a{color:var(--cyan);text-decoration:none}
+footer{padding:28px;text-align:center;color:#667383;font-size:11px;border-top:1px solid #17202b}
+.footer-brand{font-family:'Orbitron',sans-serif;color:var(--cyan);font-weight:800;margin-bottom:7px}
+@media(max-width:850px){
+ .games-grid{grid-template-columns:1fr}
+ .features,.team-grid,.stats-grid{grid-template-columns:repeat(2,1fr)}
+ .timeline{grid-template-columns:1fr}
+ .launch-banner{flex-direction:column;text-align:center}
+}
+@media(max-width:600px){
+ nav{padding:15px 5%}
+ .logo{font-size:15px}
+ nav ul{gap:9px}
+ nav a{font-size:9px}
+ section{padding:70px 5%}
+ .hero h1{font-size:38px}
+ .features,.team-grid,.stats-grid{grid-template-columns:1fr}
+ .game-image{height:210px}
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+ <div class="logo">SHADOW<span>BYTE</span></div>
+ <ul>
+  <li><a href="#home">HOME</a></li>
+  <li><a href="#games">GAMES</a></li>
+  <li><a href="#team">TEAM</a></li>
+  <li><a href="#about">ABOUT</a></li>
+  <li><a href="#contact">CONTACT</a></li>
+ </ul>
+</nav>
+
+<section class="hero" id="home">
+ <div class="hero-content">
+  <div class="badge">INDEPENDENT GAME STUDIO • EXHIBITION 2026</div>
+  <h1>CREATING WORLDS.<br><span>BUILDING LEGENDS.</span></h1>
+  <p>
+   Welcome to ShadowByte Studio — an independent game studio creating immersive
+   worlds, original gameplay and digital experiences.
+  </p>
+  <div class="hero-actions">
+   <a href="#games" class="btn">EXPLORE OUR GAMES →</a>
+   <a href="#team" class="outline-btn">MEET OUR TEAM</a>
+  </div>
+ </div>
+</section>
+
+<section id="games">
+ <div class="section-title">
+  <h2>FEATURED GAMES</h2>
+  <p>Play our released projects and discover what we're building next.</p>
+ </div>
+
+ <div class="games-grid">
+
+  <div class="game-card">
+   <div class="game-image">
+    <img src="neon-ping-pong-play-now.jpg" alt="Neon Ping Pong X Power Edition" onerror="this.style.display='none'">
+   </div>
+   <div class="game-info">
+    <h3>NEON PING PONG X</h3>
+    <p>Enter the neon arena and challenge yourself in our fast-paced, space-themed Ping Pong game.</p>
+    <span class="status launch">● PLAYABLE</span><br>
+    <a href="pingpong.html" class="game-button">PLAY NOW</a>
+   </div>
+  </div>
+
+  <div class="game-card">
+   <div class="game-image">
+    <img src="shadow-chess-poster.png" alt="Shadow Chess X 2.0 Game Poster" onerror="this.style.display='none'">
+   </div>
+   <div class="game-info">
+    <h3>SHADOW CHESS X 2.0</h3>
+    <p>Play online multiplayer chess, create rooms, join friends, and battle your opponent.</p>
+    <span class="status launch">● PLAYABLE • ONLINE MULTIPLAYER</span><br>
+    <a href="Shadow-chess-x-2.0-online.html" class="game-button">PLAY SHADOW CHESS</a>
+   </div>
+  </div>
+
+  <div class="game-card full-card">
+   <div class="game-image">
+    <img src="urban-legacy.jpg" alt="Urban Legacy Game Poster" onerror="this.style.display='none'">
+   </div>
+   <div class="game-info">
+    <h3>URBAN LEGACY</h3>
+    <p>
+     Experience an open-world life simulator where you create your own story.
+     Explore a city, drive vehicles, discover new places, earn money, and build your future.
+    </p>
+    <span class="status">● IN DEVELOPMENT</span>
+   </div>
+  </div>
+
+ </div>
+</section>
+
+<section>
+ <div class="section-title">
+  <h2>OUR VISION</h2>
+  <p>What we want players to experience.</p>
+ </div>
+ <div class="features">
+  <div class="feature"><div class="icon">🌆</div><h3>Open Worlds</h3><p>Explore immersive environments and discover new adventures.</p></div>
+  <div class="feature"><div class="icon">🎮</div><h3>Unique Gameplay</h3><p>Build engaging gameplay systems and memorable experiences.</p></div>
+  <div class="feature"><div class="icon">🚀</div><h3>Innovation</h3><p>Experiment with creative ideas and new ways to play.</p></div>
+  <div class="feature"><div class="icon">💡</div><h3>Big Dreams</h3><p>Build our journey one project at a time.</p></div>
+ </div>
+</section>
+
+<section>
+ <div class="section-title">
+  <h2>STUDIO SNAPSHOT</h2>
+  <p>A quick look at ShadowByte Studio.</p>
+ </div>
+ <div class="stats-grid">
+  <div class="stat"><strong>5</strong><span>TEAM MEMBERS</span></div>
+  <div class="stat"><strong>3</strong><span>GAME PROJECTS</span></div>
+  <div class="stat"><strong>2</strong><span>ONLINE GAMES LAUNCHED</span></div>
+  <div class="stat"><strong>2026</strong><span>STUDIO JOURNEY</span></div>
+ </div>
+</section>
+
+<section id="team">
+ <div class="section-title">
+  <h2>MEET OUR TEAM</h2>
+  <p>The people behind ShadowByte Studio.</p>
+ </div>
+
+ <div class="team-grid">
+  <div class="team-card">
+   <div class="team-avatar">S</div>
+   <h3>Shivam</h3>
+   <div class="role">FOUNDER & LEAD DEVELOPER</div>
+   <div class="handle">@pvt_shivam_ss</div>
+  </div>
+
+  <div class="team-card">
+   <div class="team-avatar">X</div>
+   <h3>Samar</h3>
+   <div class="role">3D & GAME DESIGNER</div>
+   <div class="handle">@_xsamar.18_</div>
+  </div>
+
+  <div class="team-card">
+   <div class="team-avatar">A</div>
+   <h3>Alok</h3>
+   <div class="role">CREATIVE & MARKETING LEAD</div>
+   <div class="handle">@yk.itz_alok_pndt07</div>
+  </div>
+
+  <div class="team-card">
+   <div class="team-avatar">A</div>
+   <h3>Aryan</h3>
+   <div class="role">QA & GAME TESTER</div>
+   <div class="handle">@alpha_aryan_x</div>
+  </div>
+
+  <div class="team-card">
+   <div class="team-avatar">F</div>
+   <h3>Faiz</h3>
+   <div class="role">GAMEPLAY DEVELOPER</div>
+   <div class="handle">@xdemon.18</div>
+  </div>
+ </div>
+</section>
+
+<section>
+ <div class="section-title">
+  <h2>HOW WE BUILD</h2>
+  <p>From an idea to a playable experience.</p>
+ </div>
+ <div class="timeline">
+  <div class="step"><b>01 • IDEA</b><span>Concept & vision</span></div>
+  <div class="step"><b>02 • DESIGN</b><span>World & gameplay</span></div>
+  <div class="step"><b>03 • BUILD</b><span>Development</span></div>
+  <div class="step"><b>04 • TEST</b><span>Fix & improve</span></div>
+  <div class="step"><b>05 • LAUNCH</b><span>Share with players</span></div>
+ </div>
+</section>
+
+<section id="about">
+ <div class="section-title"><h2>ABOUT SHADOWBYTE</h2></div>
+ <div class="about">
+  <p>
+   ShadowByte Studio is an independent game development studio focused on creating
+   immersive games and memorable digital worlds. Our mission is simple:
+   dream big, create boldly, learn through every project, and bring new gaming
+   experiences to players everywhere.
+  </p>
+ </div>
+</section>
+
+<section>
+ <div class="qr-box">
+  <div class="launch-pill">📱 EXHIBITION VISITOR ACCESS</div>
+  <h2 style="font-family:Orbitron;margin-top:18px">SCAN & EXPLORE</h2>
+  <p>Scan the QR code to open the ShadowByte Studio website on your phone.</p>
+  <img src="shadowbyte-qr.png"
+     alt="Scan to visit ShadowByte Studio"
+     class="qr-image">
+  <p>Tip: replace this box with a QR image pointing to your GitHub Pages website.</p>
+ </div>
+</section>
+
+<section class="contact" id="contact">
+ <div class="section-title">
+  <h2>JOIN OUR JOURNEY</h2>
+  <p>Stay connected with ShadowByte Studio.</p>
+ </div>
+ <p>Instagram:
+  <a href="https://www.instagram.com/ShadowByte_Studio/" target="_blank" rel="noopener">
+   @ShadowByte_Studio
+  </a>
+ </p>
+ <a href="https://www.instagram.com/ShadowByte_Studio/" target="_blank" rel="noopener" class="btn">
+  FOLLOW US ON INSTAGRAM
+ </a>
+</section>
+
+<footer>
+ <div class="footer-brand">SHADOWBYTE STUDIO</div>
+ © 2026 ShadowByte Studio. All Rights Reserved.
+ <br><br>DREAM. CREATE. PLAY.
+</footer>
+
+</body>
+</html>
