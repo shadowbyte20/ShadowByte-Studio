@@ -1,194 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ShadowByte Studio</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+  <title>ShadowByte Studio</title>
 
-html, body {
-    width: 100%;
-    height: 100%;
-    background: #000;
-    overflow: hidden;
-    font-family: Arial, sans-serif;
-}
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-#introVideo {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    background: #000;
-}
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
 
-#startScreen {
-    position: fixed;
-    inset: 0;
-    z-index: 5;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    background:
-        radial-gradient(circle at center,
-        #06254a 0%,
-        #020712 45%,
-        #000 100%);
-}
+    /* Full-screen responsive video */
+    #introVideo {
+      position: fixed;
+      top: 50%;
+      left: 50%;
 
-.logo {
-    color: white;
-    font-size: clamp(35px, 9vw, 75px);
-    font-weight: 900;
-    letter-spacing: 5px;
-    text-shadow:
-        0 0 10px #008cff,
-        0 0 25px #008cff,
-        0 0 50px #0066ff;
-}
+      width: 100vw;
+      height: 100vh;
 
-.tagline {
-    color: #a9d5ff;
-    font-size: 14px;
-    letter-spacing: 3px;
-    margin-top: 12px;
-    margin-bottom: 40px;
-}
+      transform: translate(-50%, -50%);
 
-#playButton {
-    padding: 18px 42px;
-    border: 2px solid #008cff;
-    border-radius: 50px;
-    background: rgba(0, 120, 255, 0.15);
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    letter-spacing: 2px;
-    cursor: pointer;
-    box-shadow:
-        0 0 15px #008cff,
-        0 0 35px rgba(0, 100, 255, 0.35);
-}
+      object-fit: cover;
+      object-position: center;
 
-#playButton:active {
-    transform: scale(0.96);
-}
+      background: #000;
+      display: block;
+    }
 
-#status {
-    color: #79c5ff;
-    font-size: 12px;
-    margin-top: 20px;
-    letter-spacing: 1px;
-}
+    /* Phone */
+    @media (max-width: 600px) {
+      #introVideo {
+        width: 100vw;
+        height: 100vh;
+        object-fit: cover;
+      }
+    }
 
-#fade {
-    position: fixed;
-    inset: 0;
-    background: #000;
-    opacity: 0;
-    pointer-events: none;
-    z-index: 10;
-    transition: opacity 1.5s ease;
-}
+    /* Tablet */
+    @media (min-width: 601px) and (max-width: 1200px) {
+      #introVideo {
+        width: 100vw;
+        height: 100vh;
+        object-fit: cover;
+      }
+    }
 
-#fade.active {
-    opacity: 1;
-}
-</style>
+    /* Laptop / Desktop */
+    @media (min-width: 1201px) {
+      #introVideo {
+        width: 100vw;
+        height: 100vh;
+        object-fit: cover;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<video id="introVideo"
-       playsinline
-       preload="auto">
-    <source src="shadowbyte-opening.mp4" type="video/mp4">
-</video>
+  <video
+    id="introVideo"
+    autoplay
+    muted
+    playsinline
+    preload="auto">
 
-<div id="startScreen">
+    <source src="shadowbyte-opening-FullHD.mp4" type="video/mp4">
 
-    <div class="logo">SHADOWBYTE</div>
+  </video>
 
-    <div class="tagline">
-        CREATING WORLDS. BUILDING LEGENDS.
-    </div>
+  <script>
+    const video = document.getElementById("introVideo");
 
-    <button id="playButton">
-        ▶ PLAY INTRO
-    </button>
+    /*
+      Automatically open your main website
+      after the intro video finishes.
+    */
+    video.addEventListener("ended", function () {
+      window.location.href = "index.html";
+    });
 
-    <div id="status">
-        SOUND ON • TAP TO BEGIN
-    </div>
-
-</div>
-
-<div id="fade"></div>
-
-<script>
-const video = document.getElementById("introVideo");
-const button = document.getElementById("playButton");
-const screen = document.getElementById("startScreen");
-const statusText = document.getElementById("status");
-const fade = document.getElementById("fade");
-
-button.addEventListener("click", async function () {
-
-    statusText.textContent = "STARTING...";
-
-    // Sound ON
-    video.muted = false;
-    video.volume = 1;
-
-    try {
-
-        // Start video directly from the user's tap
-        await video.play();
-
-        // Only hide the button AFTER playback successfully starts
-        screen.style.opacity = "0";
-
-        setTimeout(function () {
-            screen.style.display = "none";
-        }, 700);
-
-    } catch (error) {
-
-        console.error(error);
-
-        statusText.textContent =
-            "VIDEO COULD NOT START — CHECK VIDEO FILE";
-
-        button.style.display = "block";
-    }
-});
-
-video.addEventListener("ended", function () {
-
-    fade.classList.add("active");
-
-    setTimeout(function () {
-        window.location.href = "index.html";
-    }, 1500);
-
-});
-
-video.addEventListener("error", function () {
-
-    statusText.textContent =
-        "ERROR: shadowbyte-opening.mp4 NOT FOUND";
-
-});
-</script>
+    /*
+      Try autoplay when the page loads.
+    */
+    window.addEventListener("load", function () {
+      video.play().catch(() => {
+        console.log("Autoplay was blocked by the browser.");
+      });
+    });
+  </script>
 
 </body>
 </html>
