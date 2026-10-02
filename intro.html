@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>ShadowByte Studio</title>
+<title>ShadowByte Studio — Opening</title>
 
 <style>
 * {
@@ -18,56 +17,192 @@ html, body {
     height: 100%;
     background: #000;
     overflow: hidden;
+    font-family: Arial, sans-serif;
 }
 
 #introVideo {
+    position: fixed;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    display: block;
+    background: #000;
 }
 
+/* Dark cinematic overlay */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(circle at center,
+        rgba(0, 110, 255, 0.10),
+        rgba(0, 0, 0, 0.72));
+    z-index: 2;
+}
+
+/* Play screen */
+#startScreen {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(
+        135deg,
+        #02030a,
+        #00152e,
+        #000000
+    );
+    transition: opacity 0.8s ease;
+}
+
+.logo {
+    font-size: clamp(34px, 8vw, 75px);
+    font-weight: 900;
+    letter-spacing: 5px;
+    color: white;
+    text-shadow:
+        0 0 10px #008cff,
+        0 0 25px #008cff,
+        0 0 50px #0066ff;
+    margin-bottom: 12px;
+}
+
+.tagline {
+    color: #a9cfff;
+    font-size: clamp(12px, 3vw, 18px);
+    letter-spacing: 4px;
+    margin-bottom: 40px;
+}
+
+/* Professional play button */
+#playButton {
+    position: relative;
+    padding: 17px 42px;
+    border: 2px solid #008cff;
+    border-radius: 50px;
+    background: rgba(0, 110, 255, 0.12);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    cursor: pointer;
+    box-shadow:
+        0 0 12px #008cff,
+        inset 0 0 12px rgba(0, 140, 255, 0.2);
+    transition: 0.3s ease;
+}
+
+#playButton:hover {
+    background: #008cff;
+    box-shadow:
+        0 0 20px #008cff,
+        0 0 50px #0066ff;
+    transform: scale(1.05);
+}
+
+#playButton:active {
+    transform: scale(0.97);
+}
+
+.hint {
+    margin-top: 18px;
+    color: #71839b;
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+
+/* Fade transition */
 #fade {
     position: fixed;
     inset: 0;
     background: #000;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 1.5s ease;
     z-index: 10;
+    transition: opacity 1.5s ease;
 }
 
 #fade.active {
     opacity: 1;
+}
+
+/* Loading text */
+#loading {
+    display: none;
+    margin-top: 20px;
+    color: #5eb7ff;
+    font-size: 13px;
+    letter-spacing: 2px;
 }
 </style>
 </head>
 
 <body>
 
-<video id="introVideo" autoplay muted playsinline preload="auto">
+<!-- Your opening video -->
+<video id="introVideo"
+       playsinline
+       preload="auto">
     <source src="shadowbyte-opening.mp4" type="video/mp4">
+    Your browser does not support video.
 </video>
 
+<div class="overlay"></div>
+
+<!-- Professional start screen -->
+<div id="startScreen">
+
+    <div class="logo">SHADOWBYTE</div>
+
+    <div class="tagline">
+        CREATING WORLDS. BUILDING LEGENDS.
+    </div>
+
+    <button id="playButton">
+        ▶ PLAY INTRO
+    </button>
+
+    <div class="hint">
+        SOUND ON • HEADPHONES RECOMMENDED
+    </div>
+
+    <div id="loading">
+        LOADING EXPERIENCE...
+    </div>
+
+</div>
+
+<!-- Fade to website -->
 <div id="fade"></div>
 
 <script>
 
 const video = document.getElementById("introVideo");
+const startScreen = document.getElementById("startScreen");
+const playButton = document.getElementById("playButton");
 const fade = document.getElementById("fade");
+const loading = document.getElementById("loading");
 
-function openWebsite() {
+let transitioning = false;
 
-    fade.classList.add("active");
+/* Start video after user taps */
+playButton.addEventListener("click", async () => {
 
-    setTimeout(() => {
-        window.location.href = "index.html";
-    }, 1500);
-}
+    loading.style.display = "block";
+    playButton.style.display = "none";
 
-video.addEventListener("ended", openWebsite);
+    try {
 
-</script>
+        video.muted = false;
+        video.volume = 1.0;
 
-</body>
-</html>
+        await video.play();
+
+        startScreen.style.opacity = "0";
+
+        setTimeout(() => {
+            start
