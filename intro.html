@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ShadowByte Studio — Opening</title>
+<title>ShadowByte Studio</title>
 
 <style>
 * {
@@ -29,18 +29,6 @@ html, body {
     background: #000;
 }
 
-/* Dark cinematic overlay */
-.overlay {
-    position: fixed;
-    inset: 0;
-    background:
-        radial-gradient(circle at center,
-        rgba(0, 110, 255, 0.10),
-        rgba(0, 0, 0, 0.72));
-    z-index: 2;
-}
-
-/* Play screen */
 #startScreen {
     position: fixed;
     inset: 0;
@@ -50,72 +38,58 @@ html, body {
     justify-content: center;
     align-items: center;
     text-align: center;
-    background: linear-gradient(
-        135deg,
-        #02030a,
-        #00152e,
-        #000000
-    );
-    transition: opacity 0.8s ease;
+    background:
+        radial-gradient(circle at center,
+        #06254a 0%,
+        #020712 45%,
+        #000 100%);
 }
 
 .logo {
-    font-size: clamp(34px, 8vw, 75px);
+    color: white;
+    font-size: clamp(35px, 9vw, 75px);
     font-weight: 900;
     letter-spacing: 5px;
-    color: white;
     text-shadow:
         0 0 10px #008cff,
         0 0 25px #008cff,
         0 0 50px #0066ff;
-    margin-bottom: 12px;
 }
 
 .tagline {
-    color: #a9cfff;
-    font-size: clamp(12px, 3vw, 18px);
-    letter-spacing: 4px;
+    color: #a9d5ff;
+    font-size: 14px;
+    letter-spacing: 3px;
+    margin-top: 12px;
     margin-bottom: 40px;
 }
 
-/* Professional play button */
 #playButton {
-    position: relative;
-    padding: 17px 42px;
+    padding: 18px 42px;
     border: 2px solid #008cff;
     border-radius: 50px;
-    background: rgba(0, 110, 255, 0.12);
+    background: rgba(0, 120, 255, 0.15);
     color: white;
     font-size: 16px;
     font-weight: bold;
     letter-spacing: 2px;
     cursor: pointer;
     box-shadow:
-        0 0 12px #008cff,
-        inset 0 0 12px rgba(0, 140, 255, 0.2);
-    transition: 0.3s ease;
-}
-
-#playButton:hover {
-    background: #008cff;
-    box-shadow:
-        0 0 20px #008cff,
-        0 0 50px #0066ff;
-    transform: scale(1.05);
+        0 0 15px #008cff,
+        0 0 35px rgba(0, 100, 255, 0.35);
 }
 
 #playButton:active {
-    transform: scale(0.97);
+    transform: scale(0.96);
 }
 
-.hint {
-    margin-top: 18px;
-    color: #71839b;
+#status {
+    color: #79c5ff;
     font-size: 12px;
+    margin-top: 20px;
     letter-spacing: 1px;
 }
 
-/* Fade transition */
 #fade {
     position: fixed;
     inset: 0;
@@ -129,31 +103,17 @@ html, body {
 #fade.active {
     opacity: 1;
 }
-
-/* Loading text */
-#loading {
-    display: none;
-    margin-top: 20px;
-    color: #5eb7ff;
-    font-size: 13px;
-    letter-spacing: 2px;
-}
 </style>
 </head>
 
 <body>
 
-<!-- Your opening video -->
 <video id="introVideo"
        playsinline
        preload="auto">
     <source src="shadowbyte-opening.mp4" type="video/mp4">
-    Your browser does not support video.
 </video>
 
-<div class="overlay"></div>
-
-<!-- Professional start screen -->
 <div id="startScreen">
 
     <div class="logo">SHADOWBYTE</div>
@@ -166,43 +126,69 @@ html, body {
         ▶ PLAY INTRO
     </button>
 
-    <div class="hint">
-        SOUND ON • HEADPHONES RECOMMENDED
-    </div>
-
-    <div id="loading">
-        LOADING EXPERIENCE...
+    <div id="status">
+        SOUND ON • TAP TO BEGIN
     </div>
 
 </div>
 
-<!-- Fade to website -->
 <div id="fade"></div>
 
 <script>
-
 const video = document.getElementById("introVideo");
-const startScreen = document.getElementById("startScreen");
-const playButton = document.getElementById("playButton");
+const button = document.getElementById("playButton");
+const screen = document.getElementById("startScreen");
+const statusText = document.getElementById("status");
 const fade = document.getElementById("fade");
-const loading = document.getElementById("loading");
 
-let transitioning = false;
+button.addEventListener("click", async function () {
 
-/* Start video after user taps */
-playButton.addEventListener("click", async () => {
+    statusText.textContent = "STARTING...";
 
-    loading.style.display = "block";
-    playButton.style.display = "none";
+    // Sound ON
+    video.muted = false;
+    video.volume = 1;
 
     try {
 
-        video.muted = false;
-        video.volume = 1.0;
-
+        // Start video directly from the user's tap
         await video.play();
 
-        startScreen.style.opacity = "0";
+        // Only hide the button AFTER playback successfully starts
+        screen.style.opacity = "0";
 
-        setTimeout(() => {
-            start
+        setTimeout(function () {
+            screen.style.display = "none";
+        }, 700);
+
+    } catch (error) {
+
+        console.error(error);
+
+        statusText.textContent =
+            "VIDEO COULD NOT START — CHECK VIDEO FILE";
+
+        button.style.display = "block";
+    }
+});
+
+video.addEventListener("ended", function () {
+
+    fade.classList.add("active");
+
+    setTimeout(function () {
+        window.location.href = "index.html";
+    }, 1500);
+
+});
+
+video.addEventListener("error", function () {
+
+    statusText.textContent =
+        "ERROR: shadowbyte-opening.mp4 NOT FOUND";
+
+});
+</script>
+
+</body>
+</html>
